@@ -6,7 +6,7 @@ from django.conf.urls import url
 
 urlpatterns = [
     url(r"^index/$", views.index),
-
+    url(r"^detail/(\d+)/$", views.detail),
     url(r"^json/$", views.jsondata),
 
 ]
