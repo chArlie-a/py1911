@@ -21,11 +21,10 @@ from django.urls import path, include
 # MVT V视图函数  3个作用 接受请求 处理数据 返回响应
 
 
-
 urlpatterns = [
     path('admin/', admin.site.urls),
 
-    path('booktest/', include('booktest.urls'))
+    path('', include('booktest.urls', namespace='booktest'))
 ]
 # 项目的所有路由地址配置文件
 # admin路由是django自带的命令模块
