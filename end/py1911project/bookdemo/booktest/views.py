@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from django.shortcuts import render, redirect
 from django.http import HttpResponse, HttpResponseRedirect
 from django.template import loader
@@ -87,7 +89,7 @@ def addbook(request):
 
 def editbook(request, bookid):
     book = Book.objects.get(id=bookid)
-    book.pub_date = str(book.pub_date)
+    book.pub_date = book.pub_date.strftime("%Y-%m-%d")
     if request.method == 'GET':
         return render(request, 'editbook.html', {'book': book})
     elif request.method == 'POST':
