@@ -8,9 +8,15 @@
     <h1>这里是详情页</h1>
     <div>
         <h2>书名:{{ book.title }}</h2>
+        <a href="{% url 'booktest:addhero' book.id %}">添加英雄</a>
         <ul>
             {% for hero in book.hero_set.all %}
-                <li>{{hero.name}}---{{hero.gender}}---{{hero.content}}</li>
+                <li>
+                    {{hero.name}}---{{hero.gender}}---{{hero.content}}
+                    <a href="{% url 'booktest:edithero' hero.id %}">编辑英雄</a>
+                    <a href="{% url 'booktest:deletehero' hero.id %}">删除英雄</a>
+
+                </li>
             {% endfor %}
         </ul>
         <a href="{% url 'booktest:index' %}">返回列表页</a>
