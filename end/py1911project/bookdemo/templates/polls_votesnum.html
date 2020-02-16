@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>投票结果</title>
+</head>
+<body>
+    <h1>投票信息：{{issue.title}}</h1>
+    <div class="container">
+        <h2>投票总票数</h2>
+        {% for i in issue.issues.all %}
+            {{i.option1}}-----票数：{{issue.option1_votes}}
+            <br>
+            {{i.option2}}-----票数：{{issue.option2_votes}}
+            <br>
+            {% if i.option3 %}
+                {{i.option3}}-----票数：{{issue.option3_votes}}
+            {% endif %}
+            <br>
+            {% if i.option4 %}
+                {{i.option4}}-----票数：{{issue.option4_votes}}
+            {% endif %}
+            <br>
+        {% endfor %}
+        <button><a href="{% url 'polls:index' %}">返回</a></button>
+    </div>
+</body>
+</html>

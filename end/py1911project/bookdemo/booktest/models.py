@@ -29,6 +29,7 @@ class Book(models.Model):
     def __str__(self):
         return self.title
 
+
 class Hero(models.Model):
     """
     hero继承了Model 也可以操作数据库
@@ -41,3 +42,60 @@ class Hero(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class UserManager(models.Manager):
+    """
+    自定义模型管理类 该模型不在具有objects对象
+    """
+
+    def deleteTelePhone(self, tele):
+        # django默认的objects是Manager类型  *.objects.get()
+        user = self.get(telephone=tele)
+        user.delete()
+
+    def createUser(self, tele):
+        # self.model可以获取模型类和构造函数 self.model() = new()
+        user = self.model()
+        user.telephone = tele
+        user.save()
+
+
+class User(models.Model):
+    telephone = models.CharField(max_length=11, null=True, blank=True, verbose_name='手机号码')
+
+    objects = UserManager()
+
+    def __str__(self):
+        return self.telephone
+
+    class Meta:
+        # 表名
+        db_table = "用户类"
+        ordering = ['-telephone']
+        # admin页面进入模型类显示名字
+        verbose_name = '用户模型类A'
+        # admin 页面在应用下方显示的模型名
+        verbose_name_plural = '用户模型类B'
+
+
+class Account(models.Model):
+    username = models.CharField(max_length=20, verbose_name='用户名')
+    password = models.CharField(max_length=20, verbose_name='密码')
+    regist_date = models.DateField(auto_now_add=True, verbose_name='注册日期')
+
+
+class Concact(models.Model):
+    telephone = models.CharField(max_length=11, verbose_name='手机号')
+    email = models.EmailField(default='335176033@qq.com')
+    account = models.OneToOneField(Account, on_delete=models.CASCADE, related_name='con')
+
+
+class Article(models.Model):
+    title = models.CharField(max_length=20, verbose_name="文章标题")
+    summary = models.TextField(verbose_name="文章正文")
+
+
+class Tag(models.Model):
+    tagname = models.CharField(max_length=10, verbose_name="标签名")
+    articles = models.ManyToManyField(Article, verbose_name="文章", related_name="tags")

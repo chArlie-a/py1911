@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>详情页</title>
+</head>
+<body>
+    <h1>投票信息：{{issue.title}}</h1>
+    <div class="container">
+        <h3>投票选项</h3>
+        <form action="#" method="post">
+            {% for i in issue.issues.all %}
+                <input type="radio" name="p" value="1">{{i.option1}}
+                <br>
+                <input type="radio" name="p" value="2">{{i.option2}}
+                <br>
+                {% if i.option3 %}
+                    <input type="radio" name="p" value="3">{{i.option3}}
+                {% endif %}
+                <br>
+                {% if i.option4 %}
+                    <input type="radio" name="p" value="4">{{i.option4}}
+                {% endif %}
+                <br>
+            {% endfor %}
+            <input type="submit" value="投票">
+        </form>
+        <a href="{% url 'polls:index' %}">返回</a>
+    </div>
+</body>
+</html>
