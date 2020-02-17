@@ -7,7 +7,10 @@ from django.conf.urls import url
 app_name = "polls"
 
 urlpatterns = [
-    url(r"^$", views.index, name='index'),
-    url(r"^detail/(\d+)/$", views.detail, name='detail'),
-    url(r"^pollsnum/(\d+)/$", views.pollsnum, name='pollsnum')
+    # url(r"^$", views.index, name='index'),
+    # url(r"^detail/(\d+)/$", views.detail, name='detail'),
+    # url(r"^pollsnum/(\d+)/$", views.pollsnum, name='pollsnum')
+    url(r'^$', views.IndexView.as_view(), name='index'),
+    url(r'^detail/(\d+)/$', views.DetailView.as_view(), name='detail'),
+    url(r'^result/(\d+)/$', views.ResultView.as_view(), name='result'),
 ]

@@ -3,26 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <title>投票结果</title>
+    <link rel="stylesheet" href="/static/css/main.css">
 </head>
 <body>
+
+<div class="container">
     <h1>投票信息：{{issue.title}}</h1>
-    <div class="container">
-        <h2>投票总票数</h2>
+    <h2>投票总票数</h2>
+    <ul>
         {% for i in issue.issues.all %}
-            {{i.option1}}-----票数：{{issue.option1_votes}}
-            <br>
-            {{i.option2}}-----票数：{{issue.option2_votes}}
-            <br>
-            {% if i.option3 %}
-                {{i.option3}}-----票数：{{issue.option3_votes}}
-            {% endif %}
-            <br>
-            {% if i.option4 %}
-                {{i.option4}}-----票数：{{issue.option4_votes}}
-            {% endif %}
-            <br>
+        <li>{{i.name}}-----票数：{{i.votes}}</li>
         {% endfor %}
-        <button><a href="{% url 'polls:index' %}">返回</a></button>
-    </div>
+    </ul>
+    <button><a href="{% url 'polls:index' %}">返回</a></button>
+</div>
 </body>
 </html>

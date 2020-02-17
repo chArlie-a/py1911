@@ -1,7 +1,26 @@
 from django.contrib import admin
-from .models import Issue,Option
+from django.contrib.admin import ModelAdmin
+
+from .models import *
+
+
 # Register your models here.
 
-admin.site.register(Issue)
-admin.site.register(Option)
+class OptionInline(admin.StackedInline):
+    """
+    定义关联选项
+    """
+    model = Option
+    extra = 1
 
+
+class OptionAdmin(ModelAdmin):
+    pass
+
+
+class IssueAdmin(ModelAdmin):
+    inlines = [OptionInline]
+
+
+admin.site.register(Issue, IssueAdmin)
+admin.site.register(Option, OptionAdmin)
