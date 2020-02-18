@@ -2,8 +2,8 @@ from django.http import HttpResponse
 from django.shortcuts import render, redirect, reverse
 from django.views import View
 from django.views.generic import ListView
-
-from .models import Issue, Option
+from .models import *
+from django.contrib.auth import authenticate, login as lin, logout as lot
 
 
 # Create your views here.
@@ -15,14 +15,29 @@ def index(request):
 def detail(request, issueid):
     issue = Issue.objects.get(id=issueid)
     if request.method == 'GET':
-        return render(request, 'polls_detail.html', {'issue': issue})
+        if request.user and request.user.username != "":
+            if issue in request.user.issues.all():
+                print('已经投过票')
+                url = reverse('polls:result', args=(issueid,))
+                return redirect(to=url)
+            else:
+                try:
+                    print(issue, '---')
+                    return render(request, 'polls_detail.html', {'issue': issue})
+                except Exception as e:
+                    print(e, '异常结果')
+                    return HttpResponse("问题不合法")
+        else:
+            url = reverse('polls:login') + "?next=/polls/detail/" + issueid + '/'
+            return redirect(to=url)
     elif request.method == 'POST':
         choiceid = request.POST.get("num")
         try:
             option = Option.objects.get(id=choiceid)
             option.votes += 1
             option.save()
-            url = reverse('polls:pollsnum', args=(issueid,))
+            request.user.issues.add(Issue.objects.get(id=issueid))
+            url = reverse('polls:result', args=(issueid,))
             return redirect(to=url)
         except:
             return HttpResponse("选项不合法")
@@ -69,9 +84,55 @@ class DetailView(View):
 
 
 class ResultView(View):
-    def get(self,request,issueid):
+    def get(self, request, issueid):
         try:
             issue = Issue.objects.get(id=issueid)
             return render(request, 'polls_votesnum.html', {'issue': issue})
         except:
             return HttpResponse("问题不合法")
+
+
+def login(request):
+    if request.method == "GET":
+        return render(request, 'login.html')
+    elif request.method == "POST":
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+        user = authenticate(username=username, password=password)
+        if user:
+            lin(request, user)
+            next = request.GET.get('next')
+            print('取得next参数为：', next)
+            if next:
+                url = next
+            else:
+                url = reverse('polls:index')
+            return redirect(to=url)
+        else:
+            url = reverse('polls:login')
+            return redirect(to=url)
+
+
+def logout(request):
+    # 调用django的登出方法 目的是为了删除cookie
+    lot(request)
+    url = reverse('polls:index')
+    return redirect(to=url)
+
+
+def regist(request):
+    if request.method == "GET":
+        return render(request, 'regist.html')
+    elif request.method == "POST":
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+        password2 = request.POST.get('password2')
+        if User.objects.filter(username=username).count() > 0:
+            return HttpResponse("用户名已存在")
+        else:
+            if password == password2:
+                User.objects.create_user(username=username, password=password)
+                url = reverse('polls:login')
+                return redirect(to=url)
+            else:
+                return HttpResponse("密码不一致")

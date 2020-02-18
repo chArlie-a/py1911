@@ -1,7 +1,16 @@
 from django.db import models
+from django.contrib.auth.models import AbstractUser
 
 
 # Create your models here.
+class User(AbstractUser):
+    """
+    自定义用户类继承django自带用户系统
+    """
+    telephone = models.CharField(max_length=20, verbose_name='手机号')
+    issues = models.ManyToManyField('Issue')
+
+
 class Issue(models.Model):
     title = models.CharField(max_length=20, verbose_name='标题')
     creation_time = models.DateField(auto_now_add=True, verbose_name='创建时间')

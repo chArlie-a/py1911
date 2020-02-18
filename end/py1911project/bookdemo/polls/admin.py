@@ -24,3 +24,4 @@ class IssueAdmin(ModelAdmin):
 
 admin.site.register(Issue, IssueAdmin)
 admin.site.register(Option, OptionAdmin)
+admin.site.register(User)
