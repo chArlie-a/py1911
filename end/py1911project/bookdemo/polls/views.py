@@ -4,6 +4,7 @@ from django.views import View
 from django.views.generic import ListView
 from .models import *
 from django.contrib.auth import authenticate, login as lin, logout as lot
+from .forms import LoginForm, RegistForm
 
 
 # Create your views here.
@@ -94,23 +95,32 @@ class ResultView(View):
 
 def login(request):
     if request.method == "GET":
-        return render(request, 'login.html')
+        lf = LoginForm()
+        return render(request, 'login.html', {'lf': lf})
     elif request.method == "POST":
-        username = request.POST.get('username')
-        password = request.POST.get('password')
-        user = authenticate(username=username, password=password)
-        if user:
-            lin(request, user)
-            next = request.GET.get('next')
-            print('取得next参数为：', next)
-            if next:
-                url = next
+        # username = request.POST.get('username')
+        # password = request.POST.get('password')
+        # user = authenticate(username=username, password=password)
+        lf = LoginForm(request.POST)
+        if lf.is_valid():
+            username = lf.cleaned_data['username']
+            password = lf.cleaned_data['password']
+            user = authenticate(username=username, password=password)
+            if user:
+                lin(request, user)
+                next = request.GET.get('next')
+                print('取得next参数为：', next)
+                if next:
+                    url = next
+                else:
+                    url = reverse('polls:index')
+                return redirect(to=url)
             else:
-                url = reverse('polls:index')
-            return redirect(to=url)
+                # url = reverse('polls:login')
+                # return redirect(to=url)
+                return render(request, 'login.html', {'errors': '用户名或密码错误'})
         else:
-            url = reverse('polls:login')
-            return redirect(to=url)
+            return HttpResponse("未知错误")
 
 
 def logout(request):
@@ -122,17 +132,24 @@ def logout(request):
 
 def regist(request):
     if request.method == "GET":
-        return render(request, 'regist.html')
+        rf = RegistForm()
+        return render(request, 'regist.html', {'rf': rf})
     elif request.method == "POST":
-        username = request.POST.get('username')
-        password = request.POST.get('password')
-        password2 = request.POST.get('password2')
-        if User.objects.filter(username=username).count() > 0:
-            return HttpResponse("用户名已存在")
-        else:
-            if password == password2:
-                User.objects.create_user(username=username, password=password)
-                url = reverse('polls:login')
-                return redirect(to=url)
+        rf = RegistForm(request.POST)
+        if rf.is_valid():
+            print(rf.cleaned_data['username'],'==')
+            username = rf.cleaned_data['username']
+            password = rf.cleaned_data['password']
+            password2 = rf.cleaned_data['password2']
+            if User.objects.filter(username=username).count() > 0:
+                return render(request, 'regist.html', {'errors': '用户名已存在'})
             else:
-                return HttpResponse("密码不一致")
+                if password == password2:
+                    # User.objects.create_user(username=username, password=password)
+                    rf.save()
+                    url = reverse('polls:login')
+                    return redirect(to=url)
+                else:
+                    return render(request, 'regist.html', {'errors': '密码不一致'})
+        else:
+            return HttpResponse("未知错误")

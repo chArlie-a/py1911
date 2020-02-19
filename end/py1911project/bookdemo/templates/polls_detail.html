@@ -12,6 +12,7 @@
     <h3>投票选项</h3>
     <ul>
         <form action="#" method="post">
+            {% csrf_token %}
             {% for i in issue.issues.all %}
             {% if forloop.counter == 1 %}
             <li><input type="radio" checked name="num" value="{{i.id}}">{{i.name}}</li>

@@ -1,13 +1,10 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>投票结果</title>
-    <link rel="stylesheet" href="/static/css/main.css">
-</head>
-<body>
+{% extends 'base.html' %}
 
-<div class="container">
+{% block title %}
+    投票结果
+{% endblock %}
+{% block body %}
+    <div class="container">
     <h1>投票信息：{{issue.title}}</h1>
     <h2>投票总票数</h2>
     <ul>
@@ -17,5 +14,4 @@
     </ul>
     <button><a href="{% url 'polls:index' %}">返回</a></button>
 </div>
-</body>
-</html>
+{% endblock %}
