@@ -41,7 +41,7 @@ class Size(models.Model):
 
 class Commodity(models.Model):
     name = models.CharField(max_length=20, verbose_name='商品名')
-    img = models.ForeignKey(Ads, on_delete=models.CASCADE, verbose_name='商品图片')
+    img = models.ManyToManyField(Ads, verbose_name='商品图片')
     desc = UEditorField(imagePath='img/', width='100%', verbose_name='描述')
     color = models.ManyToManyField(Color, verbose_name='商品颜色')
     category = models.ForeignKey(Category, on_delete=models.CASCADE, verbose_name='分类')
@@ -55,6 +55,10 @@ class Commodity(models.Model):
     trim_size = models.CharField(max_length=30, default='1000*1000*1000', verbose_name='实际尺寸')
     weight = models.FloatField(max_length=20, verbose_name='重量')
 
+    def __str__(self):
+        return self.name
+
+
 class Comment(models.Model):
     name = models.CharField(max_length=20, verbose_name='评论人')
     email = models.EmailField(default='335176033@qq.com', verbose_name='个人邮箱')
@@ -64,5 +68,3 @@ class Comment(models.Model):
 
     def __str__(self):
         return self.name
-
-
