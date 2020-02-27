@@ -15,7 +15,11 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from django.conf.urls import url
+from django.views.static import serve
+from .settings import MEDIA_ROOT
 from shop.views import *
+from rest_framework.documentation import include_docs_urls
 # 引入DRF自带的路由类
 from rest_framework import routers
 
@@ -23,9 +27,12 @@ router = routers.DefaultRouter()
 # 可以通过router默认路由注册资源
 router.register('categorys', CategoryViewSets)
 router.register('goods', GoodViewSets)
+router.register('goodimg', GoodImgsViewSets)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/v1/', include(router.urls)),
+    url('^media/(?P<path>.*)$', serve, {'document_root': MEDIA_ROOT}),
+    path('api/v1/docs/', include_docs_urls(title='RestFulAPI', description='RestFulAPI v1')),
     # path('', include('rest_framework')),
 ]
