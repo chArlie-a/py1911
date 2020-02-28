@@ -25,7 +25,7 @@ from rest_framework import routers
 
 router = routers.DefaultRouter()
 # 可以通过router默认路由注册资源
-router.register('categorys', CategoryViewSets)
+router.register('categorys', CategoryViewSets2)
 router.register('goods', GoodViewSets)
 router.register('goodimg', GoodImgsViewSets)
 
@@ -33,6 +33,16 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/v1/', include(router.urls)),
     url('^media/(?P<path>.*)$', serve, {'document_root': MEDIA_ROOT}),
+    # url(r'^categorylist/$', categoryList, name='categorylist'),
+    # url(r'^categorydetail/(\d+)/$', categoryDetail, name='categorydetail'),
+
+    # url(r'^categorylist/$', CategoryListView.as_view(), name='categorylist'),
+    # url(r'^categorydetail/(?P<pk>\d+)/$', CategoryDetailView.as_view(), name='categorydetail'),
+
+    # url(r'^categorys/$', CategoryViewSets2.as_view({'get': 'list', 'post': 'create'})),
+    # url(r'^categorys/(?P<pk>\d+)/$',
+    #     CategoryViewSets2.as_view({'get': 'retrieve', 'put': 'update', 'patch': 'update', 'detele': 'destroy'})),
+
     path('api/v1/docs/', include_docs_urls(title='RestFulAPI', description='RestFulAPI v1')),
-    # path('', include('rest_framework')),
+    # path('', include('rest_framework.urls')),
 ]
