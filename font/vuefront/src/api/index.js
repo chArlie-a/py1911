@@ -1,26 +1,35 @@
 import jsCookie from 'js-cookie'
 import axios from 'axios'
-axios.defaults.baseURL = 'http://127.0.0.1:8000/'
+axios.defaults.baseURL = 'http://127.0.0.1:8000/';
 
 
 // 拦截请求
-// axios.interceptors.request.use(function(config) {
-// 	// Do something before request is sent
-// 	config.headers.Authorization = `Bearer ${jsCookie.get('access')}`;
-// 	return config;
-// }, function(error) {
-// 	// Do something with request error
-// 	return Promise.reject(error);
-// });
+axios.interceptors.request.use(function(config) {
+	// Do something before request is sent
+	config.headers.Authorization = `Bearer ${jsCookie.get('access')}`;
+	return config;
+}, function(error) {
+	// Do something with request error
+	return Promise.reject(error);
+});
 
-// // 拦截响应
-// axios.interceptors.response.use(function(response) {
-// 	// Do something with response data
-// 	return response;
-// }, function(error) {
-// 	// Do something with response error
-// 	return Promise.reject(error);
-// });
+// 拦截响应
+axios.interceptors.response.use(function(response) {
+	// Do something with response data
+	return response;
+}, function(error) {
+	// Do something with response error
+	if(error.response.status ==  401){
+		// 此处选择较为简单
+		console.log('认证失败',error);
+		// this.$router.push('/login/')
+		window.location.href="#/login/";
+		jsCookie.remove('access');
+		jsCookie.remove('refresh')
+	}
+	return Promise.reject(error);
+
+});
 
 export const getCategoryList = () => {
 	return axios.get('api/v1/categorys/')

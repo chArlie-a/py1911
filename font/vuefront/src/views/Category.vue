@@ -7,14 +7,19 @@
 		  left-arrow
 		  @click-left="onClickLeft"
 		/>
-		这是分类{{$route.params.id}}
+<!--		这是分类{{$route.params.id}}-->
 		<div v-if="category">
 			<b>分类ID</b> <span v-text="category.id"></span>
 			<br>
 			<b>分类名字</b> <span v-text="category.name"></span>
 		</div>
+		<ul>
+			<li v-for="(item,index) in category.goods">
+				{{item.name}}
+			</li>
+		</ul>
 	</div>
-	
+
 </template>
 
 <script>

@@ -1,9 +1,9 @@
 <template>
   <div id="app">
-<!--    <div id="nav">
+    <div id="nav">
       <router-link to="/">首页</router-link> |
-      <router-link to="/about">商品</router-link>
-    </div> -->
+      <router-link to="/login">登录</router-link>
+    </div>
     <router-view/>
   </div>
 </template>
