@@ -15,70 +15,13 @@ class CustField(serializers.RelatedField):
         return str(value.id) + "--" + value.name
 
 
-class CategorySerializer(serializers.ModelSerializer):
-    """
-    编写针对Category的序列化类
-    本类指明了Category的序列化细节
-    需要继承ModelSerializer才可以针对模型进行序列化
-    在Meta类中 model指明序列化的模型   fields指明序列的字段
-    """
-    # goods 一定要和 related_name 的值一致
-
-    # StringRelatedField() 可以显示关联模型中的 __str__返回值  many=True 代表多个对象  read_only=True 代表只读
-    # goods = serializers.StringRelatedField(many=True)
-
-    # PrimaryKeyRelatedField 显示主键值
-    # goods = serializers.PrimaryKeyRelatedField(many=True,read_only=True)
-
-    # RestFulAPI显示资源
-    # goods = serializers.HyperlinkedRelatedField(read_only=True, many=True, view_name='good-detail')
-
-    # 使用自定义序列化类
-    # goods = CustField(many=True, read_only=True)
-    id = serializers.IntegerField(read_only=True)
-    name = serializers.CharField(max_length=10, min_length=3,
-                                 error_messages={'max_length': '最多10个字', 'min_length': '最少3个字'})
-
-    def create(self, validated_data):
-        """
-        通过重写create方法 来定义模型创建方式
-        :param validated_data:
-        :return:
-        """
-        print('重写创建方法', validated_data)
-        instance = Category.objects.create(**validated_data)
-        print('创建模型实例', instance)
-        return instance
-
-    def update(self, instance, validated_data):
-        """
-        通过重写update，来定义模型的更新方法
-        :param instance:来更改之前的实例
-        :param validated_data:更改参数
-        :return:返回的新实例
-        """
-        print('重写更新方法', validated_data, instance.name)
-        instance.name = validated_data.get('name', instance.name)
-        print(instance.name)
-        instance.save()
-
-    class Meta:
-        model = Category
-        # fields = "__all__"
-        fields = ('id', 'name')
-
-
-# class GoodSerializer(serializers.ModelSerializer):
-#     category_super = serializers.CharField(source='category.name', read_only=True)
-
-
 class GoodSerializer(serializers.Serializer):
     name = serializers.CharField(max_length=20, min_length=2, error_messages={
         'max_length': '最多20个字',
         'min_length': '最少2个字'
     })
 
-    category = CategorySerializer(label='分类')
+    # category = CategorySerializer(label='分类')
 
     def validate_category(self, category):
         """
@@ -122,6 +65,60 @@ class GoodSerializer(serializers.Serializer):
         fields = ('name', 'desc', 'category', 'category_super')
 
 
+class CategorySerializer(serializers.ModelSerializer):
+    """
+    编写针对Category的序列化类
+    本类指明了Category的序列化细节
+    需要继承ModelSerializer才可以针对模型进行序列化
+    在Meta类中 model指明序列化的模型   fields指明序列的字段
+    """
+    # goods 一定要和 related_name 的值一致
+
+    # StringRelatedField() 可以显示关联模型中的 __str__返回值  many=True 代表多个对象  read_only=True 代表只读
+    # goods = serializers.StringRelatedField(many=True)
+
+    # PrimaryKeyRelatedField 显示主键值
+    # goods = serializers.PrimaryKeyRelatedField(many=True,read_only=True)
+
+    # RestFulAPI显示资源
+    # goods = serializers.HyperlinkedRelatedField(read_only=True, many=True, view_name='good-detail')
+
+    # 使用自定义序列化类
+    # goods = CustField(many=True, read_only=True)
+    id = serializers.IntegerField(read_only=True)
+    name = serializers.CharField(max_length=10, min_length=3,
+                                 error_messages={'max_length': '最多10个字', 'min_length': '最少3个字'})
+    goods = GoodSerializer(many=True, read_only=True, label='商品')
+
+    def create(self, validated_data):
+        """
+        通过重写create方法 来定义模型创建方式
+        :param validated_data:
+        :return:
+        """
+        print('重写创建方法', validated_data)
+        instance = Category.objects.create(**validated_data)
+        print('创建模型实例', instance)
+        return instance
+
+    def update(self, instance, validated_data):
+        """
+        通过重写update，来定义模型的更新方法
+        :param instance:来更改之前的实例
+        :param validated_data:更改参数
+        :return:返回的新实例
+        """
+        print('重写更新方法', validated_data, instance.name)
+        instance.name = validated_data.get('name', instance.name)
+        print(instance.name)
+        instance.save()
+
+    class Meta:
+        model = Category
+        fields = "__all__"
+        # fields = ('id', 'name')
+
+
 class GoodImgsSerializer(serializers.Serializer):
     img = serializers.ImageField()
     good = serializers.CharField(source='good.name')
@@ -145,3 +142,41 @@ class GoodImgsSerializer(serializers.Serializer):
         instance.good = validated_data.get("good", instance.good)
         instance.save()
         return instance
+
+
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        # fields = "__all__"
+        exclude = ['user_permissions', 'groups']
+
+    def validate(self, attrs):
+        print('原生创建')
+        from django.contrib.auth import hashers
+        if attrs.get('password'):
+            attrs['password'] = hashers.make_password(attrs['password'])
+        return attrs
+
+
+class UserRegistSerializer(serializers.Serializer):
+    username = serializers.CharField(max_length=10, min_length=3, error_messages={
+        'required': '用户名必填'
+    })
+    password = serializers.CharField(max_length=10, min_length=3, write_only=True)
+    password2 = serializers.CharField(max_length=10, min_length=3, write_only=True)
+
+    def validate_password2(self, data):
+        if data != self.initial_data['password']:
+            raise serializers.ValidationError('密码不一致')
+        else:
+            return data
+
+    def create(self, validated_data):
+        return User.objects.create_user(username=validated_data.get('username'), email=validated_data.get('email'),
+                                        password=validated_data.get('password'))
+
+
+class OrderSerializer(serializers.Serializer):
+    class Meta:
+        model = Order
+        fields = "__all__"

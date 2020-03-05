@@ -22,17 +22,21 @@ from shop.views import *
 from rest_framework.documentation import include_docs_urls
 # 引入DRF自带的路由类
 from rest_framework import routers
+from rest_framework_jwt.views import obtain_jwt_token
+from rest_framework_simplejwt.views import token_obtain_pair,token_refresh
 
 router = routers.DefaultRouter()
 # 可以通过router默认路由注册资源
-router.register('categorys', CategoryViewSets2)
+router.register('categorys', CategoryViewSets)
 router.register('goods', GoodViewSets)
 router.register('goodimg', GoodImgsViewSets)
-
+router.register('users', UserViewSets)
+router.register('orders', OrderViewSets)
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/v1/', include(router.urls)),
     url('^media/(?P<path>.*)$', serve, {'document_root': MEDIA_ROOT}),
+
     # url(r'^categorylist/$', categoryList, name='categorylist'),
     # url(r'^categorydetail/(\d+)/$', categoryDetail, name='categorydetail'),
 
@@ -43,6 +47,13 @@ urlpatterns = [
     # url(r'^categorys/(?P<pk>\d+)/$',
     #     CategoryViewSets2.as_view({'get': 'retrieve', 'put': 'update', 'patch': 'update', 'detele': 'destroy'})),
 
+    # url(r'^obtain_jwt_token/$',obtain_jwt_token),
+
+
+    # 先通过用户名密码  得到token  VUE将refresh以及access  通过access请求服务器  通过refresh获取新的access
+    url(r'^obtaintoken/$', token_obtain_pair, name='login'),
+    url(r'^refresh/$', token_refresh, name='refresh'),
+
     path('api/v1/docs/', include_docs_urls(title='RestFulAPI', description='RestFulAPI v1')),
-    # path('', include('rest_framework.urls')),
+    path('', include('rest_framework.urls'))
 ]

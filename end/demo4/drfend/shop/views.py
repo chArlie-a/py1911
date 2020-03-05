@@ -3,12 +3,23 @@ from django.shortcuts import get_object_or_404
 from rest_framework import viewsets, status
 from .models import *
 from .serializers import *
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, action
 from rest_framework.response import Response
 from django.views import View
 from rest_framework.views import APIView
 from rest_framework import generics
 from rest_framework import mixins
+from rest_framework import permissions
+from . import permissions as mypermissions
+
+from rest_framework import throttling
+from .throttling import MyAnon, MyUser
+
+# django过滤类
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework import filters
+
+from .pagination import MyPagination
 
 
 class CategoryListView(generics.ListCreateAPIView):
@@ -156,12 +167,92 @@ class CategoryViewSets(viewsets.ModelViewSet):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
 
+    # 授权的前提是认证
+    # permissions_classes = [permissions.IsAdminUser]
+    # 超级管理员可以创建分类  普通用户可以查看分类
+    def get_permissions(self):
+        if self.action == 'create' or self.action == 'update' or self.action == 'partial_update' or self.action == 'destroy':
+            return [permissions.IsAdminUser()]
+        else:
+            return []
+
+    # throttle_classes = [MyAnon, MyUser]
+    # pagination_class = MyPagination
+
+    # 局部过滤配置
+    filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
+    filterset_fields = ['name']
+    search_fields = ['name']
+    ordering_firlds = ['id']
+
 
 class GoodViewSets(viewsets.ModelViewSet):
     queryset = Good.objects.all()
     serializer_class = GoodSerializer
+    filterset_fields = ['name']
 
 
 class GoodImgsViewSets(viewsets.ModelViewSet):
     queryset = GoodImgs.objects.all()
     serializer_class = GoodImgsSerializer
+
+
+class UserViewSets1(viewsets.GenericViewSet, mixins.RetrieveModelMixin, mixins.UpdateModelMixin,
+                    mixins.DestroyModelMixin):
+    """
+    声明用户资源类  用户操作 获取个人信息 更新个人信息 删除账户
+    扩展出action路由  用户操作：创建账户
+    """
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+
+    @action(methods=["POST"], detail=False)
+    def regist(self, request):
+        seria = UserRegistSerializer(data=request.data)
+        seria.is_valid(raise_exception=True)
+        seria.save()
+        return Response(seria.data, status=status.HTTP_201_CREATED)
+
+
+class UserViewSets(viewsets.GenericViewSet, mixins.CreateModelMixin, mixins.RetrieveModelMixin, mixins.UpdateModelMixin,
+                   mixins.DestroyModelMixin):
+    """
+    声明用户资源类  用户操作 获取个人信息 更新个人信息 删除账户
+    扩展出action路由  用户操作：创建账户
+    """
+    queryset = User.objects.all()
+
+    # serializer_class = UserSerializer
+    def get_serializer_class(self):
+        print('action代表http方法', self.action)
+        if self.action == 'create':
+            return UserRegistSerializer
+        return UserSerializer
+
+
+class OrderViewSets(viewsets.ModelViewSet):
+    queryset = Order.objects.all()
+    serializer_class = OrderSerializer
+
+    # permission_classes = [OrdersPermission]
+    def get_permissions(self):
+        """
+        超级管理员只可以展示所有订单
+        普通用户 可以创建修改订单  不可以操作其他用户订单
+        :return:
+        """
+        print("http方法为：", self.action)
+        if self.action == 'create':
+            return [permissions.IsAuthenticated()]
+        elif self.action == 'update' or self.action == 'partial_update' or self.action == 'retrieve' or self.action == 'destroy':
+            return [mypermissions.OrdersPermission()]
+        else:
+            return [permissions.IsAdminUser()]
+
+# http方法                       混合类关键字             action关键字
+# get列表                           List                      get
+# post创建对象                      Create                   create
+# get单个对象                       retrieve                retrieve
+# put修改对象提供全属性             update                   update
+# patch 修改对象提供部分属性        update                 partial_update
+# delete 删除对象                   destroy                  destroy
