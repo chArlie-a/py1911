@@ -8,7 +8,7 @@
 
         <div>
             <van-field v-model="categoryName" type="tel" label="创建分类名" />
-<!--            <br>-->
+
             <van-button type="primary" @click="requestCreateCategory">创建分类</van-button>
 
         </div>
@@ -21,12 +21,6 @@
 <!--            <label for="">需要修改的分类名字：</label> <input type="text" v-model="newCategoryName">-->
 <!--            <br>-->
 <!--            <button @click="requestModifyCategory">需要修改的分类</button>-->
-<!--        </div>-->
-<!--        <div>-->
-<!--            <label for="">用户名：</label> <input type="text" v-model="username">-->
-<!--            <br>-->
-<!--            <label for="">密 码：</label> <input type="text" v-model="password">-->
-<!--            <br>-->
 <!--        </div>-->
     </div>
 </template>
@@ -72,7 +66,7 @@
                     }).then(res => {
                         console.log('创建结果', res);
                         this.categorys.push(res.data);
-                        // this.categoryName
+                        this.categoryName = ''
                     }).catch(err => {
                         console.log('出错了', err)
                     })

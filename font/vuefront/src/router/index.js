@@ -3,6 +3,8 @@ import VueRouter from 'vue-router'
 import Home from '../views/Home.vue'
 import Category from '../views/Category.vue'
 import Login from '../views/Login.vue'
+import UserCenter from '../views/UserCenter.vue'
+import Regist from '../views/Regist.vue'
 
 Vue.use(VueRouter)
 
@@ -18,6 +20,16 @@ const routes = [
     component: Login
   },
   {
+    path: '/usercenter/',
+    name: 'UserCenter',
+    component: UserCenter
+  },
+  {
+    path: '/regist/',
+    name: 'Regist',
+    component: Regist
+  },
+  {
     path: '/categorys/:id/',
     name: 'Category',
     component: Category
@@ -30,10 +42,10 @@ const routes = [
     // which is lazy-loaded when the route is visited.
     component: () => import(/* webpackChunkName: "about" */ '../views/About.vue')
   }
-]
+];
 
 const router = new VueRouter({
   routes
-})
+});
 
 export default router

@@ -41,3 +41,9 @@ class Order(models.Model):
 
     def __str__(self):
         return self.user.username + '的订单'
+
+
+class Verify(models.Model):
+    code = models.CharField(max_length=6)
+    telephone = models.CharField(max_length=11,unique=True)
+    createTime = models.DateTimeField(auto_now_add=True)

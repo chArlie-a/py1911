@@ -15,11 +15,37 @@ class CustField(serializers.RelatedField):
         return str(value.id) + "--" + value.name
 
 
+class GoodImgsSerializer(serializers.Serializer):
+    img = serializers.ImageField()
+    good = serializers.CharField(source='good.name')
+
+    def validate(self, attrs):
+        try:
+            g = Good.objects.get(name=attrs['good']['name'])
+            print('修改商品', g)
+            attrs['good'] = g
+        except:
+            raise serializers.ValidationError('商品不存在')
+        return attrs
+
+    def create(self, validated_data):
+        print(validated_data)
+        instance = GoodImgs.objects.create(**validated_data)
+        return instance
+
+    def update(self, instance, validated_data):
+        instance.img = validated_data.get("img", instance.img)
+        instance.good = validated_data.get("good", instance.good)
+        instance.save()
+        return instance
+
+
 class GoodSerializer(serializers.Serializer):
     name = serializers.CharField(max_length=20, min_length=2, error_messages={
         'max_length': '最多20个字',
         'min_length': '最少2个字'
     })
+    imgs = GoodImgsSerializer(label='图片', many=True, read_only=True)
 
     # category = CategorySerializer(label='分类')
 
@@ -61,8 +87,8 @@ class GoodSerializer(serializers.Serializer):
 
     class Meta:
         model = Good
-        # fields = "__all__"
-        fields = ('name', 'desc', 'category', 'category_super')
+        fields = "__all__"
+        # fields = ('name', 'desc', 'category', 'category_super')
 
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -119,32 +145,9 @@ class CategorySerializer(serializers.ModelSerializer):
         # fields = ('id', 'name')
 
 
-class GoodImgsSerializer(serializers.Serializer):
-    img = serializers.ImageField()
-    good = serializers.CharField(source='good.name')
-
-    def validate(self, attrs):
-        try:
-            g = Good.objects.get(name=attrs['good']['name'])
-            print('修改商品', g)
-            attrs['good'] = g
-        except:
-            raise serializers.ValidationError('商品不存在')
-        return attrs
-
-    def create(self, validated_data):
-        print(validated_data)
-        instance = GoodImgs.objects.create(**validated_data)
-        return instance
-
-    def update(self, instance, validated_data):
-        instance.img = validated_data.get("img", instance.img)
-        instance.good = validated_data.get("good", instance.good)
-        instance.save()
-        return instance
-
-
 class UserSerializer(serializers.ModelSerializer):
+    password = serializers.CharField(write_only=True)
+
     class Meta:
         model = User
         # fields = "__all__"

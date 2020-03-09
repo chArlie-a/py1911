@@ -33,7 +33,7 @@
 			this.$api.getCategoryDetail({
 				id:this.$route.params.id
 			}).then(res=>{
-				console.log('分类',res.data)
+				console.log('分类',res.data);
 				this.category = res.data
 			}).catch(err=>{
 				console.log('出错',err)

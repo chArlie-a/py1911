@@ -25,7 +25,9 @@ axios.interceptors.response.use(function(response) {
 		// this.$router.push('/login/')
 		window.location.href="#/login/";
 		jsCookie.remove('access');
-		jsCookie.remove('refresh')
+		jsCookie.remove('refresh');
+		jsCookie.remove('username');
+		jsCookie.remove('userinfo')
 	}
 	return Promise.reject(error);
 
@@ -33,16 +35,29 @@ axios.interceptors.response.use(function(response) {
 
 export const getCategoryList = () => {
 	return axios.get('api/v1/categorys/')
-}
+};
 export const getCategoryDetail = (param) => {
-	return axios.get(`api/v1/categorys/${param.id}/`,param)
-}
+	return axios.get(`api/v1/categorys/${param.id}/`,param,)
+};
 export const createCategory = (param) => {
-	return axios.post('api/v1/categorys/', param)
-}
+	return axios.post('api/v1/categorys/', param,)
+};
 export const modifyCategory = (param) => {
-	return axios.put(`api/v1/categorys/${param.id}/`, param)
-}
+	return axios.put(`api/v1/categorys/${param.id}/`, param,)
+};
 export const getToken = (param) => {
-	return axios.post('obtaintoken/', param)
-}
+	return axios.post('obtaintoken/', param,)
+};
+export const getUserinfo = (param) => {
+	return axios.get('getuserinfo/', param,)
+};
+export const regist = (param) => {
+	return axios.post('api/v1/users/', param,)
+};
+export const modifyUserInfo = (param) => {
+	let id = param.userinfo.id;
+	return axios.patch(`api/v1/users/${id}/`, param.userinfo)
+};
+export const sendmsg =  (param) => {
+	return axios.post('sendmsg/', param,)
+};

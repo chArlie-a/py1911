@@ -2,11 +2,41 @@
   <div id="app">
     <div id="nav">
       <router-link to="/">首页</router-link> |
-      <router-link to="/login">登录</router-link>
+
+        <span v-if="!islog">
+          <router-link to="login/">登录</router-link> |
+          <router-link to="regist/">注册</router-link>
+        </span>
+        <span v-else>
+          <router-link to="usercenter/">用户：{{$jsCookie.get("username")}}</router-link> |
+          <span @click="logout">退出</span>
+        </span>
     </div>
     <router-view/>
   </div>
 </template>
+<script>
+  export default {
+    computed:{
+      islog(){
+        return this.$store.getters.getLog
+      }
+    },
+    methods:{
+      logout(){
+        console.log("退出");
+        this.$router.push('/');
+        this.$jsCookie.remove('refresh');
+        this.$jsCookie.remove('access');
+        this.$jsCookie.remove('username');
+        this.$jsCookie.remove('userinfo');
+        this.$store.commit('setLog',false)
+      }
+    }
+  }
+</script>
+
+
 
 <style lang="less">
 #app {
@@ -24,7 +54,7 @@
     font-weight: bold;
     color: #2c3e50;
 
-    &.router-link-exact-active {
+    &.router-link-exact-active   {
       color: #42b983;
     }
   }
