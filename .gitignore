@@ -8,4 +8,7 @@ end/demo4/.idea
 end/demo4/venv
 end/test/.idea
 end/test/venv
+end/flower/.idea
+end/flower/venv
 front/vuefront/node_modules
+front/flower/node_modules
