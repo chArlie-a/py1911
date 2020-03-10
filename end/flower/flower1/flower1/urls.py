@@ -23,7 +23,16 @@ from .settings import MEDIA_ROOT
 from flower_net.views import *
 
 router = routers.DefaultRouter()
-router.register('flowerGoods', FlowerGoodsViewSets)
+
+
+router.register('flowergoods', FlowerGoodsViewSets)
+router.register('users', UserViewSets)
+router.register('categorys', CategoryViewSets)
+router.register('tags', TagViewSets)
+router.register('comments', CommentViewSets)
+router.register('carts', CartViewSets)
+
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/v1/', include(router.urls)),

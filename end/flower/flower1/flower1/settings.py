@@ -42,11 +42,13 @@ INSTALLED_APPS = [
     'flower_net',
     'rest_framework',
     'DjangoUeditor',
+    'corsheaders'
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -125,3 +127,7 @@ X_FRAME_OPTIONS = 'sameorigin'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIAFILES_DIRS = [os.path.join(BASE_DIR, 'media')]
+
+
+# 允许跨域
+CORS_ORIGIN_ALLOW_ALL = True
