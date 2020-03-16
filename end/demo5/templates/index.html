@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% block title %}
+首页
+{% endblock %}
+
+{% block main %}
+<h1>书籍列表</h1>
+<table class="table">
+    <tr>
+        <th>编号</th>
+        <th>书名</th>
+    </tr>
+    {% for b in bl %}
+    <tr>
+
+        <th>{{b.ID}}</th>
+        <th>{{b.NAME}}</th>
+
+    </tr>
+    {% endfor %}
+</table>
+{% endblock %}
