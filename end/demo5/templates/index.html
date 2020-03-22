@@ -10,13 +10,17 @@
         <th>编号</th>
         <th>书名</th>
     </tr>
-    {% for b in bl %}
+    {% for c in cs %}
+
     <tr>
 
-        <th>{{b.ID}}</th>
-        <th>{{b.NAME}}</th>
+
+        <th>{{c.id}}</th>
+        <th><a href="/categorys/{{c.id}}">{{c.name}}</a></th>
+
 
     </tr>
+
     {% endfor %}
 </table>
 {% endblock %}
